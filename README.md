@@ -22,34 +22,49 @@ dependencies:
   flutter_map_marker_cluster: any # or the latest version on Pub
 ```
 
-Add it in you FlutterMap and configure it using `MarkerClusterGroupLayerOptions`.
+Add `MarkerClusterLayerWidget` in your FlutterMap `children` paramater and configure it using `MarkerClusterLayerOptions`.
 
 ```dart
   Widget build(BuildContext context) {
     return FlutterMap(
-      layers: [
+      children: [
         TileLayerOptions(
           urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
           subdomains: ['a', 'b', 'c'],
         ),
-        MarkerClusterLayerOptions(
-          maxClusterRadius: 120,
-          size: Size(40, 40),
-          fitBoundsOptions: FitBoundsOptions(
-            padding: EdgeInsets.all(50),
-          ),
-          markers: markers,
-          polygonOptions: PolygonOptions(
-              borderColor: Colors.blueAccent,
-              color: Colors.black12,
-              borderStrokeWidth: 3),
-          builder: (context, markers) {
-            return FloatingActionButton(
-              child: Text(markers.length.toString()),
-              onPressed: null,
-            );
-          },
-        ),
+        MarkerClusterLayerWidget(
+            options: MarkerClusterLayerOptions(
+              spiderfyCircleRadius: 80,
+              spiderfySpiralDistanceMultiplier: 2,
+              circleSpiralSwitchover: 12,
+              maxClusterRadius: 120,
+              rotate: true,
+              size: const Size(40, 40),
+              anchor: AnchorPos.align(AnchorAlign.center),
+              fitBoundsOptions: const FitBoundsOptions(
+                padding: EdgeInsets.all(50),
+                maxZoom: 15,
+              ),
+              markers: markers,
+              polygonOptions: const PolygonOptions(
+                  borderColor: Colors.blueAccent,
+                  color: Colors.black12,
+                  borderStrokeWidth: 3),
+              popupOptions: PopupOptions(
+                  popupState: PopupState(),
+                  popupSnap: PopupSnap.markerTop,
+                  popupController: _popupController,
+                  popupBuilder: (_, marker) => Container(
+                        width: 200,
+                        height: 100,
+                        color: Colors.white,
+                        child: GestureDetector(
+                          onTap: () => debugPrint('Popup tap!'),
+                          child: Text(
+                            'Container popup for marker at ${marker.point}',
+                          ),
+                    ),
+         )),
       ],
     );
   }
